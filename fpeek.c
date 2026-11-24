@@ -1,7 +1,12 @@
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 /*
+TODO
 parse the CL Arguments
     Do stuff along side their flags
     -h: help
@@ -9,10 +14,12 @@ parse the CL Arguments
     
 
 Syntax: fpeek [options] <file>
-
-
 */
 
+#define BUFFER_SIZE 4096;
+
+
+char *read_file(char *fpath);
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +50,11 @@ int parse_args(int argc, char *argv[])
         {
             // Handle file input
             // Take the read_file() output
-                // free the output of read_file()
+            char* file_content = read_file();
+            printf("%s", file_content);
+            free(file_content);
+            file_content = NULL;
+                
         }
         else
         {
@@ -56,9 +67,20 @@ int parse_args(int argc, char *argv[])
 
 char *read_file(char *fpath)
 {
-    // open file at file path [arg *fpath]
-        // allocate space in the size of file content
-        // return file content
-        // REMEMBER TO FREE ME IN THE PARSE FUNCTION!!!
-    
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_done;
+    int fd;
+    char *file_content;
+
+    // open file at file path [arg *fpath] and read it.
+    fd = open(*fpath, O_RDONLY);
+    while ((bytes_done = read(fd, buffer, sizeof(buffer) - 1 )) > 0)
+    {
+        buffer[bytes_done] = '\0';
+    }
+    *file_content = malloc(bytes_done + 1);
+    // return file content
+    // REMEMBER TO FREE ME IN THE PARSE FUNCTION!!!
+
+    return file_content;   
 }
